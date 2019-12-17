@@ -813,6 +813,9 @@ class Plot_OldSync(with_metaclass(MetaParams, object)):
     def show(self):
         self.mpyplot.show()
 
+    def savefigtest(self):
+        self.mpyplot.savefig("test.png")
+
     def savefig(self, fig, filename, width=16, height=9, dpi=300, tight=True):
         fig.set_size_inches(width, height)
         bbox_inches = 'tight' * tight or None

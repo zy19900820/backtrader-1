@@ -993,6 +993,7 @@ class Cerebro(with_metaclass(MetaParams, object)):
 
                 figs.append(rfig)
 
+            plotter.savefigtest()
             plotter.show()
 
         return figs

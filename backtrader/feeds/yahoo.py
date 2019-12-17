@@ -108,6 +108,8 @@ class YahooFinanceCSVData(feed.CSVDataBase):
         self.f = f
 
     def _loadline(self, linetokens):
+        #linetokens
+        #['2002-12-31', '10.880000', '10.970000', '10.780000', '10.800000', '9.606497', '26155500']
         while True:
             nullseen = False
             for tok in linetokens[1:]:
@@ -127,6 +129,7 @@ class YahooFinanceCSVData(feed.CSVDataBase):
 
         dttxt = linetokens[next(i)]
         dt = date(int(dttxt[0:4]), int(dttxt[5:7]), int(dttxt[8:10]))
+        #self.p.sessionend  23:59:59.999990
         dtnum = date2num(datetime.combine(dt, self.p.sessionend))
 
         self.lines.datetime[0] = dtnum
