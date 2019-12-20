@@ -119,14 +119,14 @@ if __name__ == '__main__':
     cerebro = bt.Cerebro()
 
     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
-    datapath = os.path.join(modpath, 'datas/fmexOneMin2019.txt')
+    datapath = os.path.join(modpath, 'datas/fmexFourHour2019.txt')
     #datapath = os.path.join(modpath, 'datas/orcl-1995-2014.txt')
 
     data = bt.feeds.FmexFinanceCSVData(
     #data = bt.feeds.YahooFinanceCSVData(
             dataname=datapath,
             fromdate=datetime.datetime(2019, 11, 26),
-            todate=datetime.datetime(2019, 11, 28),
+            todate=datetime.datetime(2019, 12, 28),
             reverse=False)
 
     cerebro.adddata(data)
