@@ -1210,6 +1210,7 @@ class Cerebro(with_metaclass(MetaParams, object)):
                     data.extend(size=self.params.lookahead)
                 data._start()
                 if self._dopreload:
+                    #load csv数据文件
                     data.preload()
 
         for stratcls, sargs, skwargs in iterstrat:
@@ -1662,10 +1663,22 @@ class Cerebro(with_metaclass(MetaParams, object)):
 
         while True:
             # Check next incoming date in the datas
+            #[737416.7902777778] [inf]
             dts = [d.advance_peek() for d in datas]
+            #最后的时间就退出了
             dt0 = min(dts)
             if dt0 == float('inf'):
-                break  # no data delivers anything
+                print(dt0)
+                for data in self.datas:
+                    if not data.loadnewdata():
+                        return  # no data delivers anything
+                    else:
+                        dts = [d.advance_peek() for d in datas]
+                        print(dts)
+                        dt0 = min(dts)
+                        if dt0 == float('inf'):
+                            return
+                        break
 
             # Timemaster if needed be
             # dmaster = datas[dts.index(dt0)]  # and timemaster

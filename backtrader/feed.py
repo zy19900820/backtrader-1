@@ -367,6 +367,8 @@ class AbstractDataBase(with_metaclass(MetaAbstractDataBase,
             self.tick_last = getattr(self.lines, alias0)[0]
 
     def advance_peek(self):
+        print("len self:%d\n" % len(self))
+        print("buflen:%d \n" % self.buflen())
         if len(self) < self.buflen():
             return self.lines.datetime[1]  # return the future
 
@@ -469,6 +471,7 @@ class AbstractDataBase(with_metaclass(MetaAbstractDataBase,
 
     def load(self):
         while True:
+            #循环加载在起始和结束时间内的数据
             # move data pointer forward for new bar
             self.forward()
 
@@ -476,6 +479,7 @@ class AbstractDataBase(with_metaclass(MetaAbstractDataBase,
                 return True
 
             if not self._fromstack(stash=True):
+                #加载一行数据 填充lines
                 _loadret = self._load()
                 if not _loadret:  # no bar use force to make sure in exactbars
                     # the pointer is undone this covers especially (but not
@@ -594,6 +598,62 @@ class AbstractDataBase(with_metaclass(MetaAbstractDataBase,
     def replay(self, **kwargs):
         self.addfilter(Replayer, **kwargs)
 
+    def loadrealtime(self):
+        return False
+
+    def loadnewdata(self):
+        #循环加载在起始和结束时间内的数据
+        # move data pointer forward for new bar
+        self.forward()
+
+        if self._fromstack():  # bar is available
+            return True
+
+        if not self._fromstack(stash=True):
+            #加载一行数据 填充lines
+            print(self.array)
+            _loadret = self.loadrealtime()
+            print(self.array)
+            if not _loadret:  # no bar use force to make sure in exactbars
+                # the pointer is undone this covers especially (but not
+                # uniquely) the case in which the last bar has been seen
+                # and a backwards would ruin pointer accounting in the
+                # "stop" method of the strategy
+                self.backwards(force=True)  # undo data pointer
+
+                # return the actual returned value which may be None to
+                # signal no bar is available, but the data feed is not
+                # done. False means game over
+                return _loadret
+
+        # Get a reference to current loaded time
+        dt = self.lines.datetime[0]
+
+        # A bar has been loaded, adapt the time
+        if self._tzinput:
+            # Input has been converted at face value but it's not UTC in
+            # the input stream
+            dtime = num2date(dt)  # get it in a naive datetime
+            # localize it
+            dtime = self._tzinput.localize(dtime)  # pytz compatible-ized
+            self.lines.datetime[0] = dt = date2num(dtime)  # keep UTC val
+
+        # Pass through filters
+        retff = False
+        for ff, fargs, fkwargs in self._filters:
+            # previous filter may have put things onto the stack
+            if self._barstack:
+                for i in range(len(self._barstack)):
+                    self._fromstack(forward=True)
+                    retff = ff(self, *fargs, **fkwargs)
+            else:
+                retff = ff(self, *fargs, **fkwargs)
+
+            if retff:  # bar removed from systemn
+                break  # out of the inner loop
+
+        # Checks let the bar through ... notify it
+        return True
 
 class DataBase(AbstractDataBase):
     pass
@@ -696,16 +756,19 @@ class CSVDataBase(with_metaclass(MetaCSVDataBase, DataBase)):
         self.f = None
 
     def _load(self):
+        #返回加载成功还是失败
         if self.f is None:
             return False
 
         # Let an exception propagate to let the caller know
+        #这里读取不到数据就返回了
         line = self.f.readline()
 
         if not line:
             return False
 
         line = line.rstrip('\n')
+        #一行数据分开的列表
         linetokens = line.split(self.separator)
         return self._loadline(linetokens)
 
@@ -810,3 +873,6 @@ class DataClone(AbstractDataBase):
     def advance(self, size=1, datamaster=None, ticks=True):
         self._dlen += size
         super(DataClone, self).advance(size, datamaster, ticks=ticks)
+
+
+
