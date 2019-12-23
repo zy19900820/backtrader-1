@@ -29,11 +29,12 @@ from backtrader.comminfo import CommInfoBase
 from backtrader.order import Order, BuyOrder, SellOrder
 from backtrader.position import Position
 from backtrader.utils.py3 import string_types, integer_types
+import traceback
 
-__all__ = ['BackBroker', 'BrokerBack']
+__all__ = ['FmexBackBroker', 'FmexBrokerBack']
 
 
-class BackBroker(bt.BrokerBase):
+class FmexBackBroker(bt.BrokerBase):
     '''Broker Simulator
 
       The simulation supports different order types, checking a submitted order
@@ -249,14 +250,14 @@ class BackBroker(bt.BrokerBase):
     )
 
     def __init__(self):
-        super(BackBroker, self).__init__()
+        super(FmexBackBroker, self).__init__()
         self._userhist = []
         self._fundhist = []
         # share_value, net asset value
         self._fhistlast = [float('NaN'), float('NaN')]
 
     def init(self):
-        super(BackBroker, self).init()
+        super(FmexBackBroker, self).init()
         self.startingcash = self.cash = self.p.cash
         self._value = self.cash
         self._valuemkt = 0.0  # no open position
@@ -1063,17 +1064,22 @@ class BackBroker(bt.BrokerBase):
         if pclose is None:
             pclose = data.close[0]
 
+        preopen = data.open[-1]
+        prehigh = data.high[-1]
+        prelow = data.low[-1]
+        preclose = data.close[-1]
+
         pcreated = order.created.price
         plimit = order.created.pricelimit
 
         if order.exectype == Order.Market:
-            self._try_exec_market(order, popen, phigh, plow)
+            self._try_exec_market(order, preopen, prehigh, prelow)
 
         elif order.exectype == Order.Close:
-            self._try_exec_close(order, pclose)
+            self._try_exec_close(order, preclose)
 
         elif order.exectype == Order.Limit:
-            self._try_exec_limit(order, popen, phigh, plow, pcreated)
+            self._try_exec_limit(order, preopen, prehigh, prelow, pcreated)
 
         elif (order.triggered and
               order.exectype in [Order.StopLimit, Order.StopTrailLimit]):
@@ -1184,6 +1190,8 @@ class BackBroker(bt.BrokerBase):
                 uhist[0] = uhorder = next(uhorders, None)
 
     def next(self):
+        #traceback.print_stack()
+        #调用策略的next之前触发
         while self._toactivate:
             self._toactivate.popleft().activate()
 
@@ -1245,4 +1253,4 @@ class BackBroker(bt.BrokerBase):
 
 
 # Alias
-BrokerBack = BackBroker
+FmexBrokerBack = FmexBackBroker

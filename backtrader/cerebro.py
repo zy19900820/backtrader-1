@@ -1685,7 +1685,7 @@ class Cerebro(with_metaclass(MetaParams, object)):
                     strat._oncepost_open()
                     if self._event_stop:  # stop if requested
                         return
-
+            #里面调用了broker next方法
             self._brokernotify()
             if self._event_stop:  # stop if requested
                 return
@@ -1693,6 +1693,7 @@ class Cerebro(with_metaclass(MetaParams, object)):
             self._check_timers(runstrats, dt0, cheat=False)
 
             for strat in runstrats:
+                #里面有调用了策略的next
                 strat._oncepost(dt0)
                 if self._event_stop:  # stop if requested
                     return
