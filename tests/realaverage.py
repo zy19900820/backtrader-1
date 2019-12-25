@@ -95,6 +95,8 @@ class TestStrategy(bt.Strategy):
 
         self.sma = bt.indicators.SimpleMovingAverage(
                 self.datas[0], period=self.params.maperiod)
+        print(type(self.sma))
+        print(type(self.average))
 
     def log(self, txt, dt=None):
         dt = dt or bt.num2date(self.datetime[0])

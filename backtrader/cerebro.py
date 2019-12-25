@@ -1668,16 +1668,20 @@ class Cerebro(with_metaclass(MetaParams, object)):
             #最后的时间就退出了
             dt0 = min(dts)
             if dt0 == float('inf'):
-                print(dt0)
                 for data in self.datas:
                     if not data.loadnewdata():
                         return  # no data delivers anything
                     else:
+                        data.rewind()
                         dts = [d.advance_peek() for d in datas]
                         print(dts)
                         dt0 = min(dts)
+                        print(dt0)
                         if dt0 == float('inf'):
                             return
+                        for strat in runstrats:
+                            #这里要做的是给策略分配内存 填充数据
+                            strat._onenext()
                         break
 
             # Timemaster if needed be
@@ -1685,6 +1689,7 @@ class Cerebro(with_metaclass(MetaParams, object)):
             slen = len(runstrats[0])
             for i, dti in enumerate(dts):
                 if dti <= dt0:
+                    #len self + 1
                     datas[i].advance()
                     # self._plotfillers2[i].append(slen)  # mark as fill
                 else:

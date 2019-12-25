@@ -56,7 +56,7 @@ class FmexFinanceData(feed.CSVDataBase):
     params = (
         ('reverse', False),
         #('nowtime', 1577089380),
-        ('nowtime', 1577108400),
+        ('nowtime', 1577243340),
     )
 
     def start(self):
@@ -169,7 +169,25 @@ class FmexFinanceData(feed.CSVDataBase):
                     self.lines.volume[0] = candledata[i]["quote_vol"]
                     self.p.nowtime = candledata[i]["id"] + 60
                     return True
-            
+            #现在的时间比较大 填充虚假的数据用于测试    
+            timeArray = localtime(self.p.nowtime)
+            timeStr = strftime("%Y-%m-%d %H:%M:%S", timeArray)
+            print(timeStr)
+            dt = date(int(timeStr[0:4]), int(timeStr[5:7]), int(timeStr[8:10]))
+            dtTime = time(int(timeStr[11:13]), int(timeStr[14:16]), int(timeStr[17:19]), 0)
+            dtnum = date2num(datetime.combine(dt, dtTime))
+            print(dtnum)
+            self.lines.datetime[0] = dtnum
+
+            self.lines.open[0] = 7777
+            self.lines.close[0] = 7777
+            self.lines.high[0] = 7777
+            self.lines.low[0] = 7777
+            self.lines.volume[0] = 7777
+            self.p.nowtime = self.p.nowtime + 60
+            return True
+
+
             print("now:%d\n" % self.p.nowtime)
             print("id:%d \n" % candledata[0]["id"])
             sleep(10)

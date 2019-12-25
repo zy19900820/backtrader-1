@@ -282,7 +282,7 @@ class LineIterator(with_metaclass(MetaLineIterator, LineSeries)):
                 self.nextstart()  # only called for the 1st value
             elif clock_len:
                 self.prenext()
-
+                
     def _clk_update(self):
         clock_len = len(self._clock)
         if clock_len != len(self):
@@ -319,6 +319,10 @@ class LineIterator(with_metaclass(MetaLineIterator, LineSeries)):
 
         for line in self.lines:
             line.oncebinding()
+
+    def _onenext(self):
+        for indicator in self._lineiterators[LineIterator.IndType]:
+            indicator._onenext()
 
     def preonce(self, start, end):
         pass

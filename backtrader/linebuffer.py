@@ -623,12 +623,31 @@ class LineActions(with_metaclass(MetaLineActions, LineBuffer)):
             self.prenext()
 
     def _once(self):
+        #这里初始化来填充数据 策略类中定义的变量数据
         self.forward(size=self._clock.buflen())
         self.home()
 
         self.preonce(0, self._minperiod - 1)
         self.oncestart(self._minperiod - 1, self._minperiod)
+        print(self.array)
         self.once(self._minperiod, self.buflen())
+        print("minper:%d" % self._minperiod)
+        print("buflen:%d" % self.buflen())
+        print(self.array)
+        print("end")
+
+        self.oncebinding()
+
+    def _onenext(self):
+        self.forward()
+        print("start")
+        print(self.array)
+        print("minper:%d" % self._minperiod)
+        print("idx :%d" % (self._idx))
+        print("buflen:%d" % self.buflen())
+        self.once(self._idx , self.buflen())
+        print(self.array)
+        print("end")
 
         self.oncebinding()
 
@@ -663,6 +682,7 @@ class _LineDelay(LineActions):
         self[0] = self.a[self.ago]
 
     def once(self, start, end):
+        #indicator会到这里来
         # cache python dictionary lookups
         dst = self.array
         src = self.a.array
@@ -762,6 +782,7 @@ class LinesOperation(LineActions):
             self._once_val_op_r(start, end)
 
     def _once_op(self, start, end):
+        #array空间已经分配 填充数据
         # cache python dictionary lookups
         dst = self.array
         srca = self.a.array

@@ -367,8 +367,6 @@ class AbstractDataBase(with_metaclass(MetaAbstractDataBase,
             self.tick_last = getattr(self.lines, alias0)[0]
 
     def advance_peek(self):
-        print("len self:%d\n" % len(self))
-        print("buflen:%d \n" % self.buflen())
         if len(self) < self.buflen():
             return self.lines.datetime[1]  # return the future
 

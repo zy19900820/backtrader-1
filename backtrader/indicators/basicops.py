@@ -352,6 +352,7 @@ class Average(PeriodN):
     lines = ('av',)
 
     def next(self):
+        #没有调用的地方
         self.line[0] = \
             math.fsum(self.data.get(size=self.p.period)) / self.p.period
 
