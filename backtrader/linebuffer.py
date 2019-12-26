@@ -629,25 +629,28 @@ class LineActions(with_metaclass(MetaLineActions, LineBuffer)):
 
         self.preonce(0, self._minperiod - 1)
         self.oncestart(self._minperiod - 1, self._minperiod)
-        print(self.array)
+        #print(self.array)
         self.once(self._minperiod, self.buflen())
-        print("minper:%d" % self._minperiod)
-        print("buflen:%d" % self.buflen())
-        print(self.array)
-        print("end")
+        #print("minper:%d" % self._minperiod)
+        #print("buflen:%d" % self.buflen())
+        #print(self.array)
+        #print("end")
 
         self.oncebinding()
 
     def _onenext(self):
         self.forward()
-        print("start")
-        print(self.array)
-        print("minper:%d" % self._minperiod)
-        print("idx :%d" % (self._idx))
-        print("buflen:%d" % self.buflen())
+        #print("start")
+        #print(self.array)
+        #print("minper:%d" % self._minperiod)
+        #print("idx :%d" % (self._idx))
+        #print("buflen:%d" % self.buflen())
+        #print("a array")
+        #print(self.a.array)
         self.once(self._idx , self.buflen())
-        print(self.array)
-        print("end")
+        #print("array")
+        #print(self.array)
+        #print("end")
 
         self.oncebinding()
 
@@ -670,6 +673,7 @@ class _LineDelay(LineActions):
     '''
     def __init__(self, a, ago):
         super(_LineDelay, self).__init__()
+        #初始化的时候a无值
         self.a = a
         self.ago = ago
 
@@ -748,6 +752,7 @@ class LinesOperation(LineActions):
         super(LinesOperation, self).__init__()
 
         self.operation = operation
+        #这里的a b 是data 的引用 data改变时a b也改变
         self.a = a  # always a linebuffer
         self.b = b
 

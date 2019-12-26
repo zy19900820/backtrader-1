@@ -1651,6 +1651,7 @@ class Cerebro(with_metaclass(MetaParams, object)):
         is called for each data arrival
         '''
         for strat in runstrats:
+            #strat.printindi()
             strat._once()
             strat.reset()  # strat called next by next - reset lines
 

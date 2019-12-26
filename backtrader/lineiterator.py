@@ -322,7 +322,16 @@ class LineIterator(with_metaclass(MetaLineIterator, LineSeries)):
 
     def _onenext(self):
         for indicator in self._lineiterators[LineIterator.IndType]:
+            print("indicator")
+            print(indicator) 
             indicator._onenext()
+    
+    def printindi(self):
+        for indicator in self._lineiterators[LineIterator.IndType]:
+            print("array")
+            print(indicator.array)
+            print("a")
+            print(indicator.a.array)
 
     def preonce(self, start, end):
         pass

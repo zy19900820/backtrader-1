@@ -41,5 +41,9 @@ class MovingAverageSimple(MovingAverageBase):
         # Before super to ensure mixins (right-hand side in subclassing)
         # can see the assignment operation and operate on the line
         self.lines[0] = Average(self.data, period=self.p.period)
-
+        #这里没有给array添加数据
         super(MovingAverageSimple, self).__init__()
+
+    #add
+    def _onenext(self):
+        super(MovingAverageSimple, self)._onenext()

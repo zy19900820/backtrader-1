@@ -26,6 +26,7 @@ from __future__ import (absolute_import, division, print_function,
 
 from .bbroker import BackBroker, BrokerBack
 from .fmexbbroker import FmexBackBroker, FmexBrokerBack
+from .fmexrealbroker import FmexRealBroker, FmexBrokerReal
 
 try:
     from .ibbroker import IBBroker
