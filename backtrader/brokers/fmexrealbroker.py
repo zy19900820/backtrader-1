@@ -30,8 +30,7 @@ from backtrader.fmex import Fmex
 from backtrader.order import Order, BuyOrder, SellOrder
 from backtrader.position import Position
 from backtrader.utils.py3 import string_types, integer_types
-import conf
-import traceback
+from backtrader.brokers import conf
 
 __all__ = ['FmexRealBroker', 'FmexBrokerReal']
 

@@ -321,10 +321,14 @@ class LineIterator(with_metaclass(MetaLineIterator, LineSeries)):
             line.oncebinding()
 
     def _onenext(self):
+        self.forward()
         for indicator in self._lineiterators[LineIterator.IndType]:
-            print("indicator")
-            print(indicator) 
             indicator._onenext()
+       
+        #下面这句话会给indicator赋值
+        self.once(self._minperiod, self.buflen())
+        for line in self.lines:
+            line.oncebinding()
     
     def printindi(self):
         for indicator in self._lineiterators[LineIterator.IndType]:
