@@ -111,6 +111,7 @@ class Strategy(with_metaclass(MetaStrategy, StrategyBase)):
 
     _ltype = LineIterator.StratType
 
+    bstart = True
     csv = True
     _oldsync = False  # update clock using old methodology : data 0
 

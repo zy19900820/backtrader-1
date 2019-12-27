@@ -1682,6 +1682,8 @@ class Cerebro(with_metaclass(MetaParams, object)):
                             return
                         for strat in runstrats:
                             #这里要做的是给策略分配内存 填充数据
+                            #实盘在这开始执行
+                            strat.bstart = True
                             strat._onenext()
                         break
 
