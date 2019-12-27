@@ -906,24 +906,12 @@ class FmexBackBroker(bt.BrokerBase):
 
     def _try_exec_limit(self, order, popen, phigh, plow, plimit):
         if order.isbuy():
-            if plimit >= popen:
-                # open smaller/equal than requested - buy cheaper
-                pmax = min(phigh, plimit)
-                p = self._slip_up(pmax, popen, doslip=self.p.slip_open,
-                                  lim=True)
-                self._execute(order, ago=0, price=p)
-            elif plimit >= plow:
+            if plimit > plow:
                 # day low below req price ... match limit price
                 self._execute(order, ago=0, price=plimit)
 
         else:  # Sell
-            if plimit <= popen:
-                # open greater/equal than requested - sell more expensive
-                pmin = max(plow, plimit)
-                p = self._slip_down(plimit, popen, doslip=self.p.slip_open,
-                                    lim=True)
-                self._execute(order, ago=0, price=p)
-            elif plimit <= phigh:
+            if plimit < phigh:
                 # day high above req price ... match limit price
                 self._execute(order, ago=0, price=plimit)
 

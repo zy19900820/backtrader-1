@@ -609,9 +609,7 @@ class AbstractDataBase(with_metaclass(MetaAbstractDataBase,
 
         if not self._fromstack(stash=True):
             #加载一行数据 填充lines
-            print(self.array)
             _loadret = self.loadrealtime()
-            print(self.array)
             if not _loadret:  # no bar use force to make sure in exactbars
                 # the pointer is undone this covers especially (but not
                 # uniquely) the case in which the last bar has been seen

@@ -95,8 +95,6 @@ class TestStrategy(bt.Strategy):
 
         self.sma = bt.indicators.SimpleMovingAverage(
                 self.datas[0], period=self.params.maperiod)
-        print(type(self.sma))
-        print(type(self.average))
 
     def log(self, txt, dt=None):
         dt = dt or bt.num2date(self.datetime[0])
@@ -138,7 +136,6 @@ class TestStrategy(bt.Strategy):
         #traceback.print_stack()
         #self.log('Close, %.2f' % self.dataclose[0])
         #判断这个挂单是否已成交 没成交则取消
-        print("next")
         if self.pendingorder:
             self.cancel(self.pendingorder)
             self.pendingorder = None
@@ -159,17 +156,17 @@ class TestStrategy(bt.Strategy):
             #print(bt.num2date(self.completeorder[i].executed.dt))
 
 if __name__ == '__main__':
-    btotal = False
+    btotal = True
     cerebro = bt.Cerebro()
     cerebro.setbroker(bt.brokers.FmexBackBroker())
 
     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
     datapath = os.path.join(modpath, '../datas/fmexOneMin2019.txt')
 
-    data = bt.feeds.FmexFinanceData(
+    data = bt.feeds.FmexFinanceCSVData(
             dataname=datapath,
-            fromdate=datetime.datetime(2019, 12, 17),
-            todate=datetime.datetime(2019, 12, 27),
+            fromdate=datetime.datetime(2019, 11, 27),
+            todate=datetime.datetime(2019, 12, 18),
             reverse=False)
 
     cerebro.adddata(data)
