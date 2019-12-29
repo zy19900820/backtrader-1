@@ -22,8 +22,10 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import collections
-from datetime import date, datetime, time
-from time import localtime, strftime, sleep
+#from datetime import date, datetime, time
+#from time import localtime, strftime, sleep, time
+import time
+import datetime
 import io
 import itertools
 
@@ -56,7 +58,7 @@ class FmexFinanceData(feed.CSVDataBase):
     params = (
         ('reverse', False),
         #('nowtime', 1577089380),
-        ('nowtime', 1577429760),
+        ('nowtime', int(time.time() / 60) * 60 - 60 * 60 * 2),
     )
 
     def start(self):
@@ -127,11 +129,11 @@ class FmexFinanceData(feed.CSVDataBase):
         candledata = self.fmexinterface.get_candle_timestamp("M1", "btcusd_p", self.p.nowtime)["data"]
         for i in range(len(candledata)):
             if self.p.nowtime <= candledata[i]["id"]:
-                timeArray = localtime(candledata[i]["id"])
-                timeStr = strftime("%Y-%m-%d %H:%M:%S", timeArray)
-                dt = date(int(timeStr[0:4]), int(timeStr[5:7]), int(timeStr[8:10]))
-                dtTime = time(int(timeStr[11:13]), int(timeStr[14:16]), int(timeStr[17:19]), 0)
-                dtnum = date2num(datetime.combine(dt, dtTime))
+                timeArray = time.localtime(candledata[i]["id"])
+                timeStr = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                dt = datetime.date(int(timeStr[0:4]), int(timeStr[5:7]), int(timeStr[8:10]))
+                dtTime = datetime.time(int(timeStr[11:13]), int(timeStr[14:16]), int(timeStr[17:19]), 0)
+                dtnum = date2num(datetime.datetime.combine(dt, dtTime))
                 self.lines.datetime[0] = dtnum
 
                 self.lines.open[0] = candledata[i]["open"]
@@ -150,11 +152,11 @@ class FmexFinanceData(feed.CSVDataBase):
             candledata = self.fmexinterface.get_candle_timestamp("M1", "btcusd_p", self.p.nowtime)["data"]
             for i in range(len(candledata)):
                 if self.p.nowtime <= candledata[i]["id"]:
-                    timeArray = localtime(candledata[i]["id"])
-                    timeStr = strftime("%Y-%m-%d %H:%M:%S", timeArray)
-                    dt = date(int(timeStr[0:4]), int(timeStr[5:7]), int(timeStr[8:10]))
-                    dtTime = time(int(timeStr[11:13]), int(timeStr[14:16]), int(timeStr[17:19]), 0)
-                    dtnum = date2num(datetime.combine(dt, dtTime))
+                    timeArray = time.localtime(candledata[i]["id"])
+                    timeStr = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+                    dt = datetime.date(int(timeStr[0:4]), int(timeStr[5:7]), int(timeStr[8:10]))
+                    dtTime = datetime.time(int(timeStr[11:13]), int(timeStr[14:16]), int(timeStr[17:19]), 0)
+                    dtnum = date2num(datetime.datetime.combine(dt, dtTime))
                     self.lines.datetime[0] = dtnum
 
                     self.lines.open[0] = candledata[i]["open"]
@@ -164,6 +166,6 @@ class FmexFinanceData(feed.CSVDataBase):
                     self.lines.volume[0] = candledata[i]["quote_vol"]
                     self.p.nowtime = candledata[i]["id"] + 60
                     return True
-            sleep(10)
+            time.sleep(2)
 
         return True

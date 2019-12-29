@@ -79,7 +79,7 @@ def drawPrice(trades, num):
 
 class TestStrategy(bt.Strategy):
     params = (
-        ('maperiod', 111),
+        ('maperiod', 56),
         )
 
     def __init__(self):
@@ -109,20 +109,15 @@ class TestStrategy(bt.Strategy):
             self.completenum = self.completenum + 1
             self.completeorder.append(order)
             self.pendingorder = None
-            '''
             if order.isbuy():
                 self.log(
-                    'BUY EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' %
-                    (order.executed.price,
-                    order.executed.value,
-                    order.executed.comm))
+                    'BUY EXECUTED, Price: %.2f' %
+                    order.executed.price)
 
             elif order.issell():
-                self.log('SELL EXECUTED, Price: %.2f, Cost: %.2f, Comm %.2f' %
-                        (order.executed.price,
-                        order.executed.value,
-                        order.executed.comm))
-            '''
+                self.log('SELL EXECUTED, Price: %.2f' %
+                        order.executed.price)
+
         elif order.status in [order.Canceled]:
             pass
             #self.log('Order Canceled')
@@ -143,11 +138,11 @@ class TestStrategy(bt.Strategy):
             self.cancel(self.pendingorder)
             self.pendingorder = None
         if self.average[-1] > self.sma[-1]:
-            self.log('SELL CREATE, %.2f' % (self.high[-1]))
-            self.pendingorder = self.sell(price=self.high[-1], exectype=bt.Order.Limit)
+            self.log('SELL CREATE, %.2f' % (self.high[-1] + 0.5))
+            self.pendingorder = self.sell(price=self.high[-1] + 0.5, exectype=bt.Order.Limit)
         if self.average[-1] < self.sma[-1]:
-            self.log('BUY CREATE, %.2f' % (self.low[-1]))
-            self.pendingorder = self.buy(price=self.low[-1], exectype=bt.Order.Limit)
+            self.log('BUY CREATE, %.2f' % (self.low[-1] + 0.5))
+            self.pendingorder = self.buy(price=self.low[-1] + 0.5, exectype=bt.Order.Limit)
 
     def stop(self):
         self.log('completenum:%d maperiod:%d ending value:%2.f' % (self.completenum, self.params.maperiod, self.broker.getvalue()))
@@ -168,8 +163,8 @@ if __name__ == '__main__':
 
     data = bt.feeds.FmexFinanceData(
             dataname=datapath,
-            fromdate=datetime.datetime(2019, 12, 27),
-            todate=datetime.datetime(2019, 12, 28),
+            fromdate=datetime.datetime(2019, 12, 17),
+            todate=datetime.datetime(2020, 12, 28),
             reverse=False)
 
     cerebro.adddata(data)

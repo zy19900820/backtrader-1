@@ -18,7 +18,7 @@ def drawValue(trades, num):
 
     timeStamp = []
     size = 0
-    cash = 100000
+    cash = 1000000
     values = []
 
     for i in range(len(trades)):
@@ -141,10 +141,10 @@ class TestStrategy(bt.Strategy):
             self.pendingorder = None
         if self.average[-1] > self.sma[-1]:
             #self.log('SELL CREATE, %.2f' % (self.high[-1]))
-            self.pendingorder = self.sell(price=self.high[-1], exectype=bt.Order.Limit)
+            self.pendingorder = self.sell(price=self.high[-1] + 0.5, exectype=bt.Order.Limit)
         if self.average[-1] < self.sma[-1]:
             #self.log('BUY CREATE, %.2f' % (self.low[-1]))
-            self.pendingorder = self.buy(price=self.low[-1], exectype=bt.Order.Limit)
+            self.pendingorder = self.buy(price=self.low[-1] - 0.5 , exectype=bt.Order.Limit)
 
     def stop(self):
         self.log('completenum:%d maperiod:%d ending value:%2.f' % (self.completenum, self.params.maperiod, self.broker.getvalue()))
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
     data = bt.feeds.FmexFinanceCSVData(
             dataname=datapath,
-            fromdate=datetime.datetime(2019, 11, 27),
+            fromdate=datetime.datetime(2019, 12, 7),
             todate=datetime.datetime(2019, 12, 27),
             reverse=False)
 
