@@ -647,7 +647,7 @@ class LineActions(with_metaclass(MetaLineActions, LineBuffer)):
         #print("buflen:%d" % self.buflen())
         #print("a array")
         #print(self.a.array)
-        self.once(self._idx , self.buflen())
+        self.once(self._idx - 2, self.buflen())
         #print("array")
         #print(self.array)
         #print("end")

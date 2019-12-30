@@ -79,7 +79,7 @@ def drawPrice(trades, num):
 
 class TestStrategy(bt.Strategy):
     params = (
-        ('maperiod', 56),
+        ('maperiod', 5),
         )
 
     def __init__(self):
@@ -134,15 +134,17 @@ class TestStrategy(bt.Strategy):
         #traceback.print_stack()
         #self.log('Close, %.2f' % self.dataclose[0])
         #判断这个挂单是否已成交 没成交则取消
+        print(self.high)
+        print(self.low)
         if self.pendingorder:
-            self.cancel(self.pendingorder)
+            #self.cancel(self.pendingorder)
             self.pendingorder = None
         if self.average[-1] > self.sma[-1]:
             self.log('SELL CREATE, %.2f' % (self.high[-1] + 0.5))
-            self.pendingorder = self.sell(price=self.high[-1] + 0.5, exectype=bt.Order.Limit)
+            #self.pendingorder = self.sell(price=self.high[-1] + 0.5, exectype=bt.Order.Limit)
         if self.average[-1] < self.sma[-1]:
-            self.log('BUY CREATE, %.2f' % (self.low[-1] + 0.5))
-            self.pendingorder = self.buy(price=self.low[-1] + 0.5, exectype=bt.Order.Limit)
+            self.log('BUY CREATE, %.2f' % (self.low[-1] - 0.5))
+            #self.pendingorder = self.buy(price=self.low[-1] - 0.5, exectype=bt.Order.Limit)
 
     def stop(self):
         self.log('completenum:%d maperiod:%d ending value:%2.f' % (self.completenum, self.params.maperiod, self.broker.getvalue()))

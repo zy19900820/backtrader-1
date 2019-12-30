@@ -58,7 +58,7 @@ class FmexFinanceData(feed.CSVDataBase):
     params = (
         ('reverse', False),
         #('nowtime', 1577089380),
-        ('nowtime', int(time.time() / 60) * 60 - 60 * 60 * 2),
+        ('nowtime', int(time.time() / 60) * 60 - 60 * 5),
     )
 
     def start(self):
@@ -149,9 +149,11 @@ class FmexFinanceData(feed.CSVDataBase):
 
     def loadrealtime(self):
         while 1:
+            bok = False
             candledata = self.fmexinterface.get_candle_timestamp("M1", "btcusd_p", self.p.nowtime)["data"]
             for i in range(len(candledata)):
-                if self.p.nowtime <= candledata[i]["id"]:
+                #更新当前时间数据
+                if self.p.nowtime == candledata[i]["id"]:
                     timeArray = time.localtime(candledata[i]["id"])
                     timeStr = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
                     dt = datetime.date(int(timeStr[0:4]), int(timeStr[5:7]), int(timeStr[8:10]))
@@ -164,8 +166,17 @@ class FmexFinanceData(feed.CSVDataBase):
                     self.lines.high[0] = candledata[i]["high"]
                     self.lines.low[0] = candledata[i]["low"]
                     self.lines.volume[0] = candledata[i]["quote_vol"]
-                    self.p.nowtime = candledata[i]["id"] + 60
-                    return True
+                    bok = True
+                #更新上个时间段数据 因为当前时间数据获取时并不完全正确
+                if self.p.nowtime == candledata[i]["id"] + 60:
+                    self.lines.open[-1] = candledata[i]["open"]
+                    self.lines.close[-1] = candledata[i]["close"]
+                    self.lines.high[-1] = candledata[i]["high"]
+                    self.lines.low[-1] = candledata[i]["low"]
+                    self.lines.volume[-1] = candledata[i]["quote_vol"]
+            if (bok):
+                self.p.nowtime = self.p.nowtime + 60
+                return True
             time.sleep(2)
 
         return True
