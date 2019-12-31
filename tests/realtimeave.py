@@ -14,6 +14,9 @@ matplotlib.use('Tkagg')
 import matplotlib.pyplot as plt
 
 def drawValue(trades, num):
+    print("drawValue start...")
+    print("trades len:%d " % len(trades))
+    print("num:%s " % str(num))
     fig = plt.figure()
 
     timeStamp = []
@@ -27,9 +30,11 @@ def drawValue(trades, num):
         size = size + trades[i].size
         cash = cash - trades[i].executed.price * trades[i].size
         value = cash + size * trades[i].executed.price
-        #print(value)
-        #print(trades[i].executed.price)
-        #print(size)
+        print("i:%d" % i)
+        print("total size:%.2f" % size)
+        print("size:%.2f" % trades[i].size)
+        print("cash:%.2f" % cash)
+        print("value:%.2f" % value)
         values.append(value)
     
     plt.plot(timeStamp, values)
@@ -42,8 +47,12 @@ def drawValue(trades, num):
     fig.savefig(name)
     plt.cla()
     plt.close("all")
+    print("drawValue end...")
 
 def drawPosition(trades, num):
+    print("drawPosition start...")
+    print("trades len:%d " % len(trades))
+    print("num:%s " % str(num))
     fig = plt.figure()
 
     timeStamp = []
@@ -54,6 +63,9 @@ def drawPosition(trades, num):
         #timeStamp.append(trades[i].entryTimeStamp_)
         timeStamp.append(bt.num2date(trades[i].executed.dt))
         size = size + trades[i].size
+        print("i:%d" % i)
+        print("total size:%.2f" % size)
+        print("size:%.2f" % trades[i].size)
         position.append(size)
     
     plt.plot(timeStamp, position)
@@ -66,8 +78,12 @@ def drawPosition(trades, num):
     fig.savefig(name)
     plt.cla()
     plt.close("all")
+    print("drawPosition end...")
 
 def drawPrice(trades, num):
+    print("drawPrice start...")
+    print("trades len:%d " % len(trades))
+    print("num:%s " % str(num))
     fig = plt.figure()
 
     timeStamp = []
@@ -77,6 +93,8 @@ def drawPrice(trades, num):
         #timeStamp.append(datetime.fromtimestamp(trades[i].entryTimeStamp_))
         timeStamp.append(bt.num2date(trades[i].executed.dt))
         price.append(trades[i].price)
+        print("i:%d" % i)
+        print("price:%.2f" % trades[i].price)
     
     plt.plot(timeStamp, price)
     plt.gcf().autofmt_xdate()
@@ -88,6 +106,7 @@ def drawPrice(trades, num):
     fig.savefig(name)
     plt.cla()
     plt.close("all")
+    print("drawPrice end...")
 
 class TestStrategy(bt.Strategy):
     params = (
