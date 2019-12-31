@@ -34,7 +34,11 @@ def drawValue(trades, num):
     
     plt.plot(timeStamp, values)
     plt.gcf().autofmt_xdate()
-    name = "pic/value" + str(num) + ".png"
+    name = ""
+    if isinstance(num, int):
+        name = "pic/value" + str(num) + ".png"
+    else:
+        name = "pic/value" + num + ".png"
     fig.savefig(name)
     plt.cla()
     plt.close("all")
@@ -54,7 +58,11 @@ def drawPosition(trades, num):
     
     plt.plot(timeStamp, position)
     plt.gcf().autofmt_xdate()
-    name = "pic/position" + str(num) + ".png"
+    name = ""
+    if isinstance(num, int):
+        name = "pic/position" + str(num) + ".png"
+    else:
+        name = "pic/position" + num + ".png"
     fig.savefig(name)
     plt.cla()
     plt.close("all")
@@ -72,14 +80,18 @@ def drawPrice(trades, num):
     
     plt.plot(timeStamp, price)
     plt.gcf().autofmt_xdate()
-    name = "pic/price" + str(num) + ".png"
+    name = ""
+    if isinstance(num, int):
+        name = "pic/price" + str(num) + ".png"
+    else:
+        name = "pic/price" + num + ".png"
     fig.savefig(name)
     plt.cla()
     plt.close("all")
 
 class TestStrategy(bt.Strategy):
     params = (
-        ('maperiod', 5),
+        ('maperiod', 56),
         )
 
     def __init__(self):
@@ -93,6 +105,8 @@ class TestStrategy(bt.Strategy):
         self.pendingorder = None
         self.completeorder = list()
         self.completenum = 0
+        self.d = {}
+        self.drawstr = ""
 
         self.sma = bt.indicators.SimpleMovingAverage(
                 self.datas[0], period=self.params.maperiod)
@@ -101,11 +115,30 @@ class TestStrategy(bt.Strategy):
         dt = dt or bt.num2date(self.datetime[0])
         print('%s, %s' % (dt.isoformat(), txt))
 
+    def add_order(self, order):
+        dt = bt.num2date(self.datetime[0])
+        dtstr = dt.isoformat()[0:13]
+        if dtstr in self.d:
+            #dict 存在k 则加入订单
+            self.d[dtstr].append(order)
+        else:
+            if self.drawstr != "":
+            #不是第一次创建 则把上次的list打印出来 加入这次的list
+                drawPrice(self.d[self.drawstr], self.drawstr)
+                drawPosition(self.d[self.drawstr], self.drawstr)
+                drawValue(self.d[self.drawstr], self.drawstr)
+
+            self.drawstr = dtstr
+            self.d[dtstr] = list()
+            self.d[dtstr].append(order)
+                
+
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
             return
 
         if order.status in [order.Completed]:
+            self.add_order(order)
             self.completenum = self.completenum + 1
             self.completeorder.append(order)
             self.pendingorder = None
@@ -134,17 +167,15 @@ class TestStrategy(bt.Strategy):
         #traceback.print_stack()
         #self.log('Close, %.2f' % self.dataclose[0])
         #判断这个挂单是否已成交 没成交则取消
-        print(self.high)
-        print(self.low)
         if self.pendingorder:
-            #self.cancel(self.pendingorder)
+            self.cancel(self.pendingorder)
             self.pendingorder = None
         if self.average[-1] > self.sma[-1]:
             self.log('SELL CREATE, %.2f' % (self.high[-1] + 0.5))
-            #self.pendingorder = self.sell(price=self.high[-1] + 0.5, exectype=bt.Order.Limit)
+            self.pendingorder = self.sell(price=self.high[-1] + 0.5, exectype=bt.Order.Limit)
         if self.average[-1] < self.sma[-1]:
             self.log('BUY CREATE, %.2f' % (self.low[-1] - 0.5))
-            #self.pendingorder = self.buy(price=self.low[-1] - 0.5, exectype=bt.Order.Limit)
+            self.pendingorder = self.buy(price=self.low[-1] - 0.5, exectype=bt.Order.Limit)
 
     def stop(self):
         self.log('completenum:%d maperiod:%d ending value:%2.f' % (self.completenum, self.params.maperiod, self.broker.getvalue()))

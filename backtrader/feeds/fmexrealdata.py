@@ -58,7 +58,7 @@ class FmexFinanceData(feed.CSVDataBase):
     params = (
         ('reverse', False),
         #('nowtime', 1577089380),
-        ('nowtime', int(time.time() / 60) * 60 - 60 * 5),
+        ('nowtime', int(time.time() / 60) * 60 - 60 * 60 * 2),
     )
 
     def start(self):
